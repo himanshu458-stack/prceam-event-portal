@@ -1,0 +1,33 @@
+PRMCEAM COLLEGE EVENT PORTAL - QUICK SETUP
+
+1) Open terminal in the project folder.
+
+BACKEND:
+cd backend
+copy .env.example .env        (Windows)
+# or: cp .env.example .env   (Linux/macOS)
+npm install
+npm run dev
+
+2) Open a SECOND terminal in the project folder.
+
+FRONTEND:
+cd frontend
+copy .env.example .env        (Windows)
+# or: cp .env.example .env   (Linux/macOS)
+npm install
+npm run dev
+
+3) Before starting backend, edit backend/.env:
+MONGODB_URI=your MongoDB Atlas connection string
+JWT_SECRET=your secret
+CLIENT_URL=http://localhost:5173
+
+4) Open the Vite URL, normally:
+http://localhost:5173
+
+5) Register an Admin and create an event.
+
+6) Register a Student and register for the event.
+
+7) Test duplicate registration and full-seat behavior.
