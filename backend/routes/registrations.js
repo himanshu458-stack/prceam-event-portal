@@ -1,100 +1,181 @@
+
 const express = require("express");
-const Event = require("../models/Event");
-const Registration = require("../models/Registration");
+const db = require("../db");
 const { authenticate, requireRole } = require("../middleware/auth");
 
 const router = express.Router();
 
+// Register a student for an event
 router.post(
   "/:eventId",
   authenticate,
   requireRole("student"),
   async (req, res) => {
-    try {
-      const event = await Event.findById(req.params.eventId);
+    let connection;
+    let transactionStarted = false;
 
-      if (!event) {
+    try {
+      const eventId = Number(req.params.eventId);
+      const studentId = Number(req.user.id);
+
+      if (
+        !Number.isSafeInteger(eventId) ||
+        eventId < 1 ||
+        !Number.isSafeInteger(studentId) ||
+        studentId < 1
+      ) {
+        return res.status(400).json({ message: "Invalid event or student ID." });
+      }
+
+      connection = await db.getConnection();
+
+      await connection.beginTransaction();
+      transactionStarted = true;
+
+      // Lock the event row while checking and reserving a seat.
+      const [events] = await connection.execute(
+        `SELECT id, name, max_seats, registered_count
+         FROM events
+         WHERE id = ?
+         FOR UPDATE`,
+        [eventId]
+      );
+
+      if (events.length === 0) {
+        await connection.rollback();
+        transactionStarted = false;
         return res.status(404).json({ message: "Event not found." });
       }
 
-      if (event.registeredCount >= event.maxSeats) {
-        return res.status(400).json({ message: "No seats are available." });
-      }
+      const event = events[0];
 
-      const existing = await Registration.findOne({
-        event: event._id,
-        student: req.user.id
-      });
+      const [existing] = await connection.execute(
+        `SELECT id
+         FROM registrations
+         WHERE event_id = ? AND student_id = ?`,
+        [eventId, studentId]
+      );
 
-      if (existing) {
+      if (existing.length > 0) {
+        await connection.rollback();
+        transactionStarted = false;
+
         return res.status(409).json({
           message: "You are already registered for this event."
         });
       }
 
-      // Atomic seat reservation: only increment while seats remain.
-      const updatedEvent = await Event.findOneAndUpdate(
-        {
-          _id: event._id,
-          $expr: { $lt: ["$registeredCount", "$maxSeats"] }
-        },
-        { $inc: { registeredCount: 1 } },
-        { new: true }
+      if (event.registered_count >= event.max_seats) {
+        await connection.rollback();
+        transactionStarted = false;
+
+        return res.status(400).json({
+          message: "No seats are available."
+        });
+      }
+
+      await connection.execute(
+        `INSERT INTO registrations (event_id, student_id)
+         VALUES (?, ?)`,
+        [eventId, studentId]
       );
 
-      if (!updatedEvent) {
-        return res.status(400).json({ message: "No seats are available." });
-      }
+      await connection.execute(
+        `UPDATE events
+         SET registered_count = registered_count + 1
+         WHERE id = ?`,
+        [eventId]
+      );
 
-      try {
-        await Registration.create({
-          event: event._id,
-          student: req.user.id
-        });
-      } catch (registrationError) {
-        // If the unique index catches a duplicate created concurrently,
-        // return a useful response. The count is corrected for this request.
-        if (registrationError.code === 11000) {
-          await Event.findByIdAndUpdate(event._id, {
-            $inc: { registeredCount: -1 }
-          });
-          return res.status(409).json({
-            message: "You are already registered for this event."
-          });
-        }
-
-        await Event.findByIdAndUpdate(event._id, {
-          $inc: { registeredCount: -1 }
-        });
-        throw registrationError;
-      }
+      await connection.commit();
+      transactionStarted = false;
 
       res.status(201).json({
         message: "Registration successful.",
-        remainingSeats: updatedEvent.maxSeats - updatedEvent.registeredCount
+        remainingSeats: Math.max(
+          event.max_seats - event.registered_count - 1,
+          0
+        )
       });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Unable to register for the event." });
+      if (connection && transactionStarted) {
+        try {
+          await connection.rollback();
+        } catch (rollbackError) {
+          console.error("Rollback error:", rollbackError.message);
+        }
+      }
+
+      if (error.code === "ER_DUP_ENTRY") {
+        return res.status(409).json({
+          message: "You are already registered for this event."
+        });
+      }
+
+      console.error("Registration error:", error.message);
+
+      res.status(500).json({
+        message: "Unable to register for the event."
+      });
+    } finally {
+      if (connection) {
+        connection.release();
+      }
     }
   }
 );
 
+// Get the logged-in student's registrations
 router.get(
   "/my",
   authenticate,
   requireRole("student"),
   async (req, res) => {
     try {
-      const registrations = await Registration.find({
-        student: req.user.id
-      })
-        .populate("event")
-        .sort({ createdAt: -1 });
+      const studentId = Number(req.user.id);
 
-      res.json(registrations);
-    } catch {
-      res.status(500).json({ message: "Unable to load your registrations." });
+      const [registrations] = await db.execute(
+        `SELECT
+          r.id AS registrationId,
+          r.registered_at AS registeredAt,
+          e.id AS eventId,
+          e.name AS eventName,
+          e.event_date AS eventDate,
+          e.event_time AS eventTime,
+          e.max_seats AS maxSeats,
+          e.registered_count AS registeredCount
+         FROM registrations r
+         JOIN events e ON r.event_id = e.id
+         WHERE r.student_id = ?
+         ORDER BY r.registered_at DESC`,
+        [studentId]
+      );
+
+      res.json(
+        registrations.map((registration) => ({
+          id: registration.registrationId,
+          registeredAt: registration.registeredAt,
+          event: {
+            id: registration.eventId,
+            _id: String(registration.eventId),
+            name: registration.eventName,
+            date: registration.eventDate,
+            time: registration.eventTime,
+            maxSeats: registration.maxSeats,
+            registeredCount: registration.registeredCount,
+            remainingSeats: Math.max(
+              registration.maxSeats - registration.registeredCount,
+              0
+            )
+          }
+        }))
+      );
+    } catch (error) {
+      console.error("Load registrations error:", error.message);
+
+      res.status(500).json({
+        message: "Unable to load your registrations."
+      });
     }
   }
 );

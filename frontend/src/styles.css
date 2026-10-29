@@ -603,3 +603,389 @@ th {
     text-align: left;
   }
 }
+
+/* ===== Colorful College Event Portal Upgrade ===== */
+
+:root {
+  color: #252343;
+  background: #f7f7fc;
+  font-family: "DM Sans", system-ui, sans-serif;
+}
+
+body {
+  color: #252343;
+  background:
+    radial-gradient(circle at 8% 5%, #e9e3ff 0, transparent 28%),
+    radial-gradient(circle at 95% 20%, #ffe6df 0, transparent 25%),
+    #f7f7fc;
+}
+
+.navbar {
+  background: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid #e8e6f3;
+  box-shadow: 0 4px 20px rgba(65, 50, 120, 0.05);
+}
+
+.brand {
+  color: #5544ce;
+}
+
+.user-chip {
+  color: #655d82;
+}
+
+.home-page {
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+.hero-badge,
+.eyebrow {
+  color: #6955dc;
+}
+
+.hero h1 {
+  color: #282344;
+}
+
+.hero p,
+.role-card p {
+  color: #716d88;
+}
+
+.role-card,
+.panel,
+.auth-card,
+.student-event-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #e9e5f7;
+  border-radius: 22px;
+  box-shadow: 0 12px 35px rgba(65, 50, 120, 0.07);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.role-card:hover,
+.student-event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px rgba(65, 50, 120, 0.12);
+}
+
+.role-icon {
+  background: linear-gradient(135deg, #7258ed, #a36bfa);
+  box-shadow: 0 8px 18px rgba(114, 88, 237, 0.2);
+}
+
+.btn-primary {
+  color: white;
+  background: linear-gradient(135deg, #6955e8, #8a62ed);
+  box-shadow: 0 5px 12px rgba(105, 85, 232, 0.16);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5540d4, #7850df);
+}
+
+.btn-light {
+  color: #5544ce;
+  background: #f0edff;
+}
+
+.btn-outline {
+  color: #5544ce;
+  background: white;
+  border: 1px solid #ded8fb;
+}
+
+.btn {
+  border-radius: 12px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.btn:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid #b9aaff;
+  outline-offset: 3px;
+}
+
+.form input {
+  border: 1px solid #ded9ef;
+  border-radius: 12px;
+  background: #fdfcff;
+}
+
+.form input:focus {
+  border-color: #8068ed;
+  outline: 3px solid #eee9ff;
+}
+
+.auth-card {
+  padding: 38px;
+}
+
+.auth-heading h1,
+.page-heading h1 {
+  color: #292344;
+}
+
+.calendar-block {
+  background: linear-gradient(145deg, #ffe2dc, #ffd0c6);
+  color: #bd4c5a;
+  border-radius: 16px;
+}
+
+.summary-pill {
+  background: #e9e5ff;
+  color: #5946d1;
+  border: 1px solid #dcd4ff;
+  border-radius: 16px;
+}
+
+.seat-open {
+  color: #13866d;
+  background: #e0f8ef;
+  border-radius: 8px;
+  padding: 5px 9px;
+}
+
+.seat-full {
+  color: #bd4555;
+  background: #ffe6e9;
+  border-radius: 8px;
+  padding: 5px 9px;
+}
+
+.alert.success {
+  color: #14775f;
+  background: #e3f8ef;
+  border: 1px solid #bcebd9;
+}
+
+.alert.error {
+  color: #a83248;
+  background: #fff0f1;
+  border: 1px solid #ffd1d8;
+}
+
+.muted,
+.panel p {
+  color: #716d88;
+}
+
+@media (max-width: 640px) {
+  .home-page {
+    padding-top: 42px;
+    padding-bottom: 42px;
+  }
+
+  .role-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .role-card {
+    padding: 24px;
+  }
+
+  .auth-card {
+    padding: 25px;
+  }
+
+  .navbar {
+    padding: 12px 5%;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+}
+
+/* Student dashboard enhancements */
+
+.student-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 30px;
+}
+
+.student-stat {
+  padding: 22px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  display: grid;
+  gap: 8px;
+}
+
+.stat-purple {
+  background: linear-gradient(135deg, #eee8ff, #faf7ff);
+  border-color: #ddd2ff;
+}
+
+.stat-mint {
+  background: linear-gradient(135deg, #dcf8ed, #f4fff9);
+  border-color: #c3eedc;
+}
+
+.stat-coral {
+  background: linear-gradient(135deg, #ffe6df, #fff8f5);
+  border-color: #ffd6cb;
+}
+
+.stat-icon {
+  font-size: 24px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #6e6886;
+}
+
+.student-stat strong {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 34px;
+}
+
+.stat-caption {
+  font-size: 12px;
+  color: #77718b;
+}
+
+.event-explorer {
+  padding: 26px;
+  margin-bottom: 18px;
+  border: 1px solid #e9e5f7;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.explorer-heading,
+.panel-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.explorer-heading h2 {
+  margin: 8px 0 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 26px;
+}
+
+.result-count {
+  flex-shrink: 0;
+  background: #f0edff;
+  color: #5946d1;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.event-filters {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid #e2ddf1;
+  border-radius: 13px;
+  background: #fcfbff;
+}
+
+.search-box > span {
+  font-size: 25px;
+  color: #7765df;
+}
+
+.search-box input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+
+.filter-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #77718b;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.filter-control select {
+  min-height: 48px;
+  max-width: 100%;
+  padding: 0 12px;
+  border: 1px solid #e2ddf1;
+  border-radius: 13px;
+  background: white;
+  color: #30294f;
+  font: inherit;
+}
+
+.empty-emoji {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.empty h2 {
+  color: #30294f;
+}
+
+.empty .btn {
+  margin-top: 12px;
+}
+
+.student-event-card {
+  border-color: #e9e5f7;
+}
+
+.student-event-card:nth-child(3n + 1) .calendar-block {
+  background: linear-gradient(145deg, #e8e0ff, #d9ceff);
+  color: #5946d1;
+}
+
+.student-event-card:nth-child(3n + 2) .calendar-block {
+  background: linear-gradient(145deg, #ffe3dc, #ffd0c4);
+  color: #bd4c5a;
+}
+
+.student-event-card:nth-child(3n) .calendar-block {
+  background: linear-gradient(145deg, #d9f8eb, #c2f0dd);
+  color: #167a63;
+}
+
+@media (max-width: 700px) {
+  .student-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .event-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-control {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .filter-control select {
+    width: 100%;
+  }
+
+  .event-explorer {
+    padding: 18px;
+  }
+
+  .explorer-heading {
+    align-items: flex-start;
+  }
+}

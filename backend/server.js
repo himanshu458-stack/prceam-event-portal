@@ -1,8 +1,9 @@
+
 require("dotenv").config();
 
 const express = require("express");
-const mongoose = require("mongoose");
 const cors = require("cors");
+const db = require("./db");
 
 const authRoutes = require("./routes/auth");
 const eventRoutes = require("./routes/events");
@@ -15,10 +16,13 @@ app.use(
     origin: process.env.CLIENT_URL || "http://localhost:5173"
   })
 );
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "College Event Portal API is running." });
+  res.json({
+    message: "College Event Portal API is running."
+  });
 });
 
 app.use("/api/auth", authRoutes);
@@ -29,8 +33,12 @@ const PORT = process.env.PORT || 5000;
 
 async function startServer() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("MongoDB connected");
+    const connection = await db.getConnection();
+
+    console.log("MySQL connected successfully!");
+
+    connection.release();
+
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
